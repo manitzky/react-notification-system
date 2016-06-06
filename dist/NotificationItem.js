@@ -63,17 +63,18 @@ var NotificationItem = React.createClass({displayName: "NotificationItem",
       actionWrapper: getStyles.byElement('actionWrapper')(level),
       actions: getStyles.byElement('action')(level)
     };
+    if (this.props.notification.actions) {
+      for (i = 0; i < this.props.notification.actions.length; i++) {
+        this._defaultActions[i] = function(index, event) {
+          var notification = this.props.notification;
 
-    for (i = 0; i < this.props.notification.actions.length; i++) {
-      this._defaultActions[i] = function(event) {
-        var notification = this.props.notification;
-
-        event.preventDefault();
-        this._hideNotification();
-        if (typeof notification.actions.callback === 'function') {
-          notification.action.callback();
-        }
-      };
+          event.preventDefault();
+          this._hideNotification();
+          if (typeof notification.actions[index].callback === 'function') {
+            notification.actions[index].callback();
+          }
+        };
+      }
     }
 
     if (!this.props.notification.dismissible) {
@@ -245,6 +246,7 @@ var NotificationItem = React.createClass({displayName: "NotificationItem",
     var cssByPos = this._getCssPropertyByPosition();
     var dismiss = null;
     var actionButtons = [];
+    var actionButtonsWrapper = null;
     var title = null;
     var message = null;
     var i = 0;
@@ -299,18 +301,21 @@ var NotificationItem = React.createClass({displayName: "NotificationItem",
       dismiss = React.createElement("span", {className: "notification-dismiss", style:  this._styles.dismiss}, "×");
     }
 
-    if (notification.actions.length > 0) {
+    if (notification.actions) {
       for (i = 0; i < notification.actions.length; i++) {
         actionButtons.push(
-          React.createElement("div", {key:  i, className: "notification-action-wrapper", style:  this._styles.actionWrapper}, 
-            React.createElement("button", {className: "notification-action-button", 
-              onClick:  this._defaultActions[i], 
+            React.createElement("button", {key:  i, className: "notification-action-button", 
+              onClick:  this._defaultActions[i].bind(this, i), 
               style:  this._styles.actions}, 
                  notification.actions[i].label
             )
-          )
         );
       }
+      actionButtonsWrapper = (
+        React.createElement("div", {className: "notification-action-wrapper", style:  this._styles.actionWrapper}, 
+           actionButtons 
+        )
+      );
     }
 
     return (
@@ -318,7 +323,7 @@ var NotificationItem = React.createClass({displayName: "NotificationItem",
          title, 
          message, 
          dismiss, 
-         actionButtons 
+         actionButtonsWrapper 
       )
     );
   }
