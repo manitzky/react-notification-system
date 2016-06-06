@@ -221,7 +221,7 @@ var STYLES = {
       borderRadius: '2px',
       padding: '6px 20px',
       fontWeight: 'bold',
-      margin: '10px 0 0 0',
+      margin: '10px 10px 0 0',
       border: 0
     },
 

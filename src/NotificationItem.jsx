@@ -29,7 +29,8 @@ var NotificationItem = React.createClass({
     getStyles: React.PropTypes.object,
     onRemove: React.PropTypes.func,
     allowHTML: React.PropTypes.bool,
-    noAnimation: React.PropTypes.bool
+    noAnimation: React.PropTypes.bool,
+    actions: React.PropTypes.array
   },
 
   getDefaultProps: function() {
@@ -50,6 +51,7 @@ var NotificationItem = React.createClass({
   componentWillMount: function() {
     var getStyles = this.props.getStyles;
     var level = this.props.notification.level;
+    var i = 0;
 
     this._noAnimation = this.props.noAnimation;
 
@@ -59,8 +61,21 @@ var NotificationItem = React.createClass({
       dismiss: getStyles.byElement('dismiss')(level),
       messageWrapper: getStyles.byElement('messageWrapper')(level),
       actionWrapper: getStyles.byElement('actionWrapper')(level),
-      action: getStyles.byElement('action')(level)
+      actions: getStyles.byElement('action')(level)
     };
+    if (this.props.notification.actions) {
+      for (i = 0; i < this.props.notification.actions.length; i++) {
+        this._defaultActions[i] = function(index, event) {
+          var notification = this.props.notification;
+
+          event.preventDefault();
+          this._hideNotification();
+          if (typeof notification.actions[index].callback === 'function') {
+            notification.actions[index].callback();
+          }
+        };
+      }
+    }
 
     if (!this.props.notification.dismissible) {
       this._styles.notification.cursor = 'default';
@@ -120,15 +135,7 @@ var NotificationItem = React.createClass({
     return css;
   },
 
-  _defaultAction: function(event) {
-    var notification = this.props.notification;
-
-    event.preventDefault();
-    this._hideNotification();
-    if (typeof notification.action.callback === 'function') {
-      notification.action.callback();
-    }
-  },
+  _defaultActions: [],
 
   _hideNotification: function() {
     if (this._notificationTimer) {
@@ -238,9 +245,11 @@ var NotificationItem = React.createClass({
     var notificationStyle = merge({}, this._styles.notification);
     var cssByPos = this._getCssPropertyByPosition();
     var dismiss = null;
-    var actionButton = null;
+    var actionButtons = [];
+    var actionButtonsWrapper = null;
     var title = null;
     var message = null;
+    var i = 0;
 
     if (this.state.visible) {
       className = className + ' notification-visible';
@@ -292,14 +301,19 @@ var NotificationItem = React.createClass({
       dismiss = <span className="notification-dismiss" style={ this._styles.dismiss }>&times;</span>;
     }
 
-    if (notification.action) {
-      actionButton = (
+    if (notification.actions) {
+      for (i = 0; i < notification.actions.length; i++) {
+        actionButtons.push(
+            <button key={ i } className="notification-action-button"
+              onClick={ this._defaultActions[i].bind(this, i) }
+              style={ this._styles.actions }>
+                { notification.actions[i].label }
+            </button>
+        );
+      }
+      actionButtonsWrapper = (
         <div className="notification-action-wrapper" style={ this._styles.actionWrapper }>
-          <button className="notification-action-button"
-            onClick={ this._defaultAction }
-            style={ this._styles.action }>
-              { notification.action.label }
-          </button>
+          { actionButtons }
         </div>
       );
     }
@@ -309,7 +323,7 @@ var NotificationItem = React.createClass({
         { title }
         { message }
         { dismiss }
-        { actionButton }
+        { actionButtonsWrapper }
       </div>
     );
   }

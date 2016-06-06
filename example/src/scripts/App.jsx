@@ -26,54 +26,32 @@ NotificationSystemExample = React.createClass({
       title: 'Hey, it\'s good to see you!',
       message: 'Now you can see how easy it is to use notifications in React!',
       level: 'success',
+      autoDismiss: 0,
       position: 'tr',
-      action: {
+      actions: [ {
         label: 'Awesome!',
         callback: function() {
           console.log('Clicked');
         }
-      }
-    },
-    {
-      title: 'I\'ll be here forever!',
-      message: 'Just kidding, you can click me.',
-      level: 'success',
-      position: 'tr',
-      autoDismiss: 0
-    },
-    {
-      title: 'Bad things can happen too!',
-      message: 'Four notification types: `success`, `error`, `warning` and `info`',
-      level: 'error',
-      position: 'tl'
-    },
-    {
-      title: 'Advise!',
-      message: 'Showing all possible notifications works better on a larger screen',
-      level: 'info',
-      position: 'tc'
-    },
-    {
-      title: 'Warning!',
-      message: 'It\'s not a good idea show all these notifications at the same time!',
-      level: 'warning',
-      position: 'bc',
-      action: {
-        label: 'Got it!'
-      }
-    },
-    {
-      title: 'Success!',
-      message: 'I\'m out of ideas',
-      level: 'success',
-      position: 'bl'
-    },
-    {
-      title: 'I\'m here forever...',
-      message: 'Until you click me.',
-      autoDismiss: 0,
-      level: 'error',
-      position: 'br'
+      },
+      {
+        label: 'Awesome 2',
+        callback: function() {
+          console.log('Clicked 2');
+        }
+      },
+      {
+        label: 'Awesome 3',
+        callback: function() {
+          console.log('Clicked 3');
+        }
+      },
+      {
+        label: 'Awesome 4',
+        callback: function() {
+          console.log('Clicked 4');
+        }
+      } ]
     }
   ],
 
